@@ -620,12 +620,12 @@ class MHA(nn.Module):
             else {"key_padding_mask": key_padding_mask, **kwargs}
         )
         seqlen_offset = (
-            0
+            kwargs.pop("seqlen_offset", 0) # Clean kwargs passed to inner_attn; drop rotary-specific keys to avoid TypeError
             if inference_params is None
             else (
                 inference_params.lengths_per_sample
                 if inference_params.lengths_per_sample is not None
-                else kwargs.pop("seqlen_offset", 0) # Clean kwargs passed to inner_attn; drop rotary-specific keys to avoid TypeError
+                else inference_params.seqlen_offset
             )
         )
         rotary_max_seqlen = inference_params.max_seqlen if inference_params is not None else kwargs.pop("rotary_max_seqlen", None) # Clean kwargs passed to inner_attn; drop rotary-specific keys to avoid TypeError
