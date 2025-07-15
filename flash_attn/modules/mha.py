@@ -625,10 +625,10 @@ class MHA(nn.Module):
             else (
                 inference_params.lengths_per_sample
                 if inference_params.lengths_per_sample is not None
-                else inference_params.seqlen_offset
+                else kwargs.pop("seqlen_offset", 0) # Clean kwargs passed to inner_attn; drop rotary-specific keys to avoid TypeError
             )
         )
-        rotary_max_seqlen = inference_params.max_seqlen if inference_params is not None else None
+        rotary_max_seqlen = inference_params.max_seqlen if inference_params is not None else kwargs.pop("rotary_max_seqlen", None) # Clean kwargs passed to inner_attn; drop rotary-specific keys to avoid TypeError
         batch, seqlen = x.shape[:2]
         if not self.cross_attn and self.num_heads_kv == self.num_heads:
             assert x_kv is None and mixer_subset is None
